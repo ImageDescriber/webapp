@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="fr" ng-app="IDApp" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="fr" ng-app="IDApp" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="fr" ng-app="IDApp" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="fr" ng-app="IDApp" class="no-js"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ImageDescriber</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="web/css/font-awesome/css/font-awesome.min.css" type="text/css" />
+    <link rel="stylesheet" href="web/css/style.css" type="text/css" />
+    <link rel="stylesheet" href="Home/Home.css" type="text/css" />
+    <link rel="stylesheet" href="Admin/Admin.css" type="text/css" />
+</head>
+
+<body>
+    <header class="navbar navbar-inverse navbar-fixed-top" role="navigation" style="">
+        <nav class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <div class="navbar-brand" id="home-logo">
+                    <h1 style="display: inline; margin-left: 20px;"><a href="#!/Home">ImageDescriber</a></h1></div>
+            </div>
+            <div class="collapse navbar-collapse">
+
+            </div>
+        </nav>
+    </header>
+    <section class="container-fluid" style="margin-top: 50px; margin-bottom: 50px;">
+        <div class="row">
+            <section class="col-sm-12" id="sectionContent">
+                <div ng-view></div>
+            </section>
+        </div>
+    </section>
+    <footer class="navbar-inverse navbar-fixed-bottom">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="text-center">
+                        <a href="#!/admin" class="text-muted">Admin</a> - <a href="#!/mentions-legales" class="text-muted">Mentions légales</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-route.min.js"></script>
+    <script src="//code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <script type="text/javascript" src="app.js"></script>
+    <script type="text/javascript" src="Home/Home.js"></script>
+    <script type="text/javascript" src="Admin/Admin.js"></script>
+</body>
+</html>
