@@ -31,7 +31,6 @@ h2 > a, h2 > a:hover, h2 > a:focus {
 }
 
 footer {
-    position: fixed;
     bottom: 0;
     width: 100%;
     color: #CCC;

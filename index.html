@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="web/css/font-awesome/css/font-awesome.min.css" type="text/css" />
     <link rel="stylesheet" href="web/css/style.css" type="text/css" />
     <link rel="stylesheet" href="Home/Home.css" type="text/css" />
-    <link rel="stylesheet" href="Admin/Admin.css" type="text/css" />
+    <link rel="stylesheet" href="web/angular-libraries/angucomplete/angucomplete.css" type="text/css" />
 </head>
 
 <body>
@@ -47,8 +47,11 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-xs-12">
+                    <div class="pull-right">
+                        <a href="https://www.wikidata.org" target="_blank"><img src="web/images/wikidata.png" style="max-height: 25px;" /></a>
+                    </div>
                     <div class="text-center">
-                        <a href="#!/admin" class="text-muted">Admin</a> - <a href="#!/mentions-legales" class="text-muted">Mentions légales</a>
+                        <a href="#!/mentions-legales" class="text-muted">Mentions légales</a>
                     </div>
                 </div>
             </div>
@@ -57,11 +60,11 @@
 
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-route.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-cookies.js"></script>
     <script src="//code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
     <script type="text/javascript" src="app.js"></script>
     <script type="text/javascript" src="Home/Home.js"></script>
-    <script type="text/javascript" src="Admin/Admin.js"></script>
 </body>
 </html>

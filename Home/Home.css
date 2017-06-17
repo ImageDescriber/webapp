@@ -1,0 +1,34 @@
+#HomeContainer .img {
+    max-height: 500px;
+}
+
+#HomeContainer .a {
+    cursor: pointer;
+}
+
+#HomeContainer .a-label {
+    cursor: pointer;
+    color: #fff;
+}
+
+#HomeContainer .a-label:hover {
+    cursor: pointer;
+    color: #fff;
+}
+
+#HomeContainer #body {
+    margin-top: 10px;
+}
+
+#HomeContainer #listAddedDepicts {
+    font-size: 140%;
+    margin-top: 10px;
+}
+
+#HomeContainer .label {
+    margin-right: 5px;
+}
+
+#HomeContainer .imageLabel {
+    font-size: 120%;
+}

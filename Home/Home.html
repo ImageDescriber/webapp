@@ -1,10 +1,105 @@
-<div class="row">
-    <div class="col-xs-12 jumbotron">
-        <p>Aidez la communauté Open Data à identifier les sujets des peintures !</p>
-        <ul>
-            <li><a href='https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=%23Paintings%0ASELECT %3Fitem %3FitemLabel WHERE {%0A %3Fitem wdt%3AP31 wd%3AQ3305213.%0A SERVICE wikibase%3Alabel { bd%3AserviceParam wikibase%3Alanguage "[AUTO_LANGUAGE]%2Cfr%2Cen". }%0A}'>Query paintings (224.387)</a></li>
-            <li><a href='https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=%23Paintings%0ASELECT %3Fitem %3FitemLabel %3Fimage WHERE {%0A %3Fitem wdt%3AP31 wd%3AQ3305213.%0A %3Fitem wdt%3AP18 %3Fimage.%0A SERVICE wikibase%3Alabel { bd%3AserviceParam wikibase%3Alanguage "[AUTO_LANGUAGE]%2Cfr%2Cen". }%0A}'>Query paintings with image (62.951)</a></li>
-            <li><a href='https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=%23Paintings%0ASELECT %3Fitem WHERE {%0A %3Fitem wdt%3AP31 wd%3AQ3305213.%0A %3Fitem wdt%3AP18 %3Fimage.%0A %3Fitem wdt%3AP180 %3Fdepict.%0A SERVICE wikibase%3Alabel { bd%3AserviceParam wikibase%3Alanguage "[AUTO_LANGUAGE]%2Cfr%2Cen". }%0A} GROUP BY %3Fitem'>Query paintings with image and depict 23.726</a></li>
-        </ul>
+<div id="HomeContainer">
+    <div class="row">
+        <div ng-if="topMangement == 'down'" class="col-xs-12 jumbotron text-center" style="padding: 10px;">
+            <div>
+                <div class="pull-right">
+                    <a ng-click="topManagement()" class="a"><i class="fa fa-chevron-down"></i></a>
+                </div>
+                <h2>Aidez-nous !</h2>
+            </div>
+        </div>
+        <div ng-if="topMangement == 'up'" class="col-xs-12 jumbotron text-center">
+            <div>
+                <h2>Aidez-nous !</h2>
+            </div>
+            <p>Aidez la communauté Open Data à identifier les sujets de ces peintures !</p>
+            <div class="text-center">
+                <a ng-click="topManagement()" class="a"><i class="fa fa-5x fa-chevron-up"></i></a>
+            </div>
+        </div>
+    </div>
+    <div id="body">
+        <div class="row" ng-if="loading == true">
+            <div class="col-xs-12 text-center" style="font-size: 200%">
+                <i class="fa fa-5x fa-spin fa-circle-o-notch"></i>
+            </div>
+        </div>
+        <div class="row" ng-if="loading == false">
+            <div class="col-sm-6 text-center">
+                <div class="thumbnail">
+                    <img src="{{ item.image }}" class="img-responsive img" />
+                    <div class="caption">
+                        <div>
+                            <h2 ng-if="search.language == 'fr'" class="imageLabel">{{ wdtItem["labels"]["fr"]["value"] }}</h2>
+                            <h2 ng-if="search.language == 'en'" class="imageLabel">{{ wdtItem["labels"]["en"]["value"] }}</h2>
+                        </div>
+                        <a href="https://www.wikidata.org/wiki/Q{{ item.qwd }}" target="_blank">Wikidata element</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div ng-if="loadThanks == false">
+                    <h2>Que voyez-vous sur cette image ?</h2>
+
+                    <form>
+                        <div class="form-group">
+                            <label class="sr-only" for="searchInput">Recherche</label>
+                            <div class="input-group input-group-lg">
+                                <input id="searchInput" ng-model="search.searchStr" type="text" placeholder="{{ search.placeholder }}" class="form-control" onmouseup="this.select();" ng-focus="resetHideResults()" ng-blur="hideResults()" />
+                                <span class="input-group-btn">
+                                    <a ng-click="newDepict()" class="a btn btn-default" type="button" title="Insérer la valeur"><i class="fa fa-check" aria-hidden="true"></i></a>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="angucomplete-dropdown" ng-if="search.showDropdown">
+                            <div class="angucomplete-searching" ng-show="search.searching">Searching...</div>
+                            <div class="angucomplete-searching" ng-show="!search.searching && (!search.results || search.results.length == 0)">No results found</div>
+                            <div class="angucomplete-row" ng-repeat="result in search.results" ng-mousedown="selectResult(result)" ng-mouseover="hoverRow()" ng-class="{'angucomplete-selected-row': $index == search.currentIndex}">
+                                <div class="angucomplete-title" ng-if="search.matchClass" ng-bind-html="result.label"></div>
+                                <div class="angucomplete-title" ng-if="!search.matchClass">{{ result.label }}</div>
+                                <div ng-if="result.description && result.description != ''" class="angucomplete-description">{{result.description}}</div>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="listAddedDepicts">
+                        <span class="label label-default" ng-repeat="depict in depicts">{{ depict.label }} <a ng-click="removeDepict(depict)" class="a-label"><i class="fa fa-remove"></i></a></span>
+                    </div>
+                    <div ng-if="depicts.length > 0" style="margin-top: 20px;">
+                        <button class="btn btn-lg btn-block btn-primary" ng-click="persist()">J'ai fini !</button>
+                    </div>
+                    <div ng-if="previousDepicts > 0">
+                        <hr />
+                        <strong>Les éléments suivants ont déjà été marqués :</strong>
+                    </div>
+                </div>
+                <div ng-if="loadThanks == true" class="text-center">
+                    <h2>Merci ! <i class="fa fa-smile-o"></i></h2>
+                    <div>
+                        <i class="fa fa-spin fa-circle-o-notch fa-5x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<div class="modal fade" id="modalLanguage" tabindex="-1" role="dialog" aria-labelledby="modalLanguageLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modalLanguageLabel">Language</h4>
+            </div>
+            <div class="modal-body text-center">
+                <p>Please, select your favorite language:</p>
+                <div class="btn-group">
+                    <a role="button" id="btnEn" class="btn btn-primary" ng-click="language = 'en'; active('btnEn');">English</a>
+                    <a role="button" id="btnFr" class="btn btn-primary" ng-click="language = 'fr'; active('btnFr');">Français</a>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" ng-click="closeModalLanguage()">Confirm</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
