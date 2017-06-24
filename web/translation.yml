@@ -1,0 +1,43 @@
+en:
+    index:
+        id1: "Legal mentions"
+    home:
+        id1: "Wikidata element"
+        id2: "What can you see on this picture?"
+        id3: "Search"
+        id4: "\"Jesus\", \"woman\", \"hat\", \"wood\"..."
+        id5: "Append"
+        id6: "Searching..."
+        id7: "No results found"
+        id8: "I'm done!"
+        id9: "The following items are already tagged:"
+        id10: "Nothing to add"
+        id11: "Pass"
+        id12: "Thanks!"
+        id13: "institutional website"
+        id14: "Creator"
+        id15: "Date of creation"
+        id16: "Collection"
+        id17: "Genre"
+
+fr:
+    index:
+        id1: "Mentions légales"
+    home:
+        id1: "Élément Wikidata"
+        id2: "Que voyez-vous sur cette image ?"
+        id3: "Recherche"
+        id4: "\"Jésus\", \"femme\", \"chapeau\", \"forêt\"..."
+        id5: "Insérer la valeur"
+        id6: "Recherche en cours"
+        id7: "Aucun résultat"
+        id8: "J'ai fini !"
+        id9: "Les éléments suivants ont déjà été marqués :"
+        id10: "Je n'ai rien à ajouter"
+        id11: "Passer"
+        id12: "Merci !"
+        id13: "Site institutionnel"
+        id14: "Auteur"
+        id15: "Date de création"
+        id16: "Collection"
+        id17: "Genre"

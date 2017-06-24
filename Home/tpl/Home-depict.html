@@ -1,0 +1,12 @@
+<div ng-if="page.loadThanks == false">
+    <h2>{{ page.translation.home.id2 }}</h2>
+    <form ng-include="'Home/tpl/Home-depict-form.html'"></form>
+    <div ng-include="'Home/tpl/Home-depict-depicts-add.html'"></div>
+    <div ng-include="'Home/tpl/Home-depict-depicts-wdt.html'"></div>
+</div>
+<div ng-if="page.loadThanks == true" class="text-center">
+    <h2>{{ page.translation.home.id12 }} <i class="fa fa-smile-o"></i></h2>
+    <div>
+        <i class="fa fa-spin fa-circle-o-notch fa-5x"></i>
+    </div>
+</div>

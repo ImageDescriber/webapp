@@ -17,7 +17,7 @@
 }
 
 #HomeContainer #body {
-    margin-top: 10px;
+    margin-top: 50px;
 }
 
 #HomeContainer #listAddedDepicts {
@@ -31,4 +31,15 @@
 
 #HomeContainer .imageLabel {
     font-size: 120%;
+}
+
+#HomeContainer .div-langage {
+    padding: 5px 20px;
+    background-color: #EEE;
+    margin-top: 0;
+    border-top: solid 1px #CCC;
+}
+
+#HomeContainer .jumbotron {
+    margin-bottom: 0;
 }

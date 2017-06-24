@@ -1,0 +1,29 @@
+<div class="thumbnail">
+    <img src="{{ item.image }}" class="img-responsive img" />
+    <div class="caption text-left">
+        <div class="list-group">
+            <div class="list-group-item">
+                <h2 class="list-group-item-heading">{{ item.label }}</h2>
+                <p>{{ item.description }}</p>
+                <a href="https://www.wikidata.org/wiki/Q{{ item.qwd }}" target="_blank">{{ page.translation.home.id1 }}</a>
+                <span ng-if="item.url != null"> - <a href="{{ item.url }}" target="_blank">{{ page.translation.home.id13 }}</a></span>
+            </div>
+            <dl class="list-group-item dl-horizontal" ng-if="item.creator != null">
+                <dt>{{ page.translation.home.id14 }}</dt>
+                <dd>{{ item.creator }}</dd>
+            </dl>
+            <dl class="list-group-item dl-horizontal" ng-if="item.date_creation != null">
+                <dt>{{ page.translation.home.id15 }}</dt>
+                <dd>{{ item.date_creation }}</dd>
+            </dl>
+            <dl class="list-group-item dl-horizontal" ng-if="item.collection != null">
+                <dt>{{ page.translation.home.id16 }}</dt>
+                <dd>{{ item.collection }}</dd>
+            </dl>
+            <dl class="list-group-item dl-horizontal" ng-if="item.genre != null">
+                <dt>{{ page.translation.home.id17 }}</dt>
+                <dd>{{ item.genre }}</dd>
+            </dl>
+        </div>
+    </div>
+</div>
