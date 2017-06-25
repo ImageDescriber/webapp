@@ -1,17 +1,17 @@
-<div ng-if="depict.wdtDepicts.length > 0">
+<div ng-if="item.wdtDepicts.length > 0">
     <hr />
     <div><strong>{{ page.translation.home.id9 }}</strong></div>
     <div class="row">
         <div class="col-xs-12">
-                <span ng-repeat="depict in depict.wdtDepicts">
+                <span ng-repeat="depict in item.wdtDepicts">
                     <a href="http://www.wikidata.org/wiki/{{ depict.qwd }}" target="_blank" class="label label-info">{{ depict.label }}</a>
                 </span>
         </div>
     </div>
-    <div ng-if="depict.depicts.length == 0" style="margin-top: 20px;">
+    <div ng-if="item.depicts.length == 0" style="margin-top: 20px;">
         <button class="btn btn-block btn-primary" ng-click="nothingToAdd()">{{ page.translation.home.id10 }}</button>
     </div>
 </div>
-<div ng-if="depict.depicts.length == 0 && depict.wdtDepicts.length == 0" style="margin-top: 20px;">
+<div ng-if="item.depicts.length == 0 && item.wdtDepicts.length == 0" style="margin-top: 20px;">
     <button class="btn btn-block btn-warning" ng-click="pass()">{{ page.translation.home.id11 }}</button>
 </div>

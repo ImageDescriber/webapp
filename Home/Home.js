@@ -9,11 +9,7 @@ app.controller("HomeCtrl", function ($scope, $http, $sce, $timeout, $parse, $coo
         translation: YAML.load('web/translation.yml')['en']
     };
     $scope.depict = {
-        newDepictValue: "",
-        depicts: [],
-        wdtDepicts: [],
-        wdtDepictsConstruction: [],
-        wdtDepictsLength: 0
+        newDepictValue: ""
     };
     $scope.search = {
         language: "en",
@@ -22,20 +18,32 @@ app.controller("HomeCtrl", function ($scope, $http, $sce, $timeout, $parse, $coo
         id: "searchInput",
         pause: 100,
         selectedObject: "selectedObject",
-        url: "https://www.wikidata.org/w/api.php?action=wbsearchentities&language=en&format=json&search=",
+        url: "https://www.wikidata.org/w/api.php?action=wbsearchentities&language=en&strictlanguage=true&format=json&responselanginfo=true&uselang=en&errorlang=en&search=",
         inputclass: "form-control",
         minLength: 1
     };
     $scope.item = {
         qwd: null,
         image: null,
+        imageName: null,
         label: null,
         description: null,
-        creator: null,
-        date_creation: null,
-        genre: null,
-        collection: null,
-        url: null
+        creator: [],
+        creatorLength: 0,
+        date_creation: [],
+        date_creationLength: 0,
+        genre: [],
+        genreLength: 0,
+        collection: [],
+        collectionLength: 0,
+        url: [],
+        urlLength: 0,
+        depicts: [],
+        wdtDepicts: [],
+        wdtDepictsLength: 0
+    };
+    $scope.user = {
+        ip: null
     };
     /* Variables */
 
@@ -43,14 +51,14 @@ app.controller("HomeCtrl", function ($scope, $http, $sce, $timeout, $parse, $coo
     if($cookieStore.get('id_histoiredelart_language') !== undefined) {
         $scope.search.languageDefinition = true;
         $scope.search.language = $cookieStore.get('id_histoiredelart_language');
-        $scope.search.url = "https://www.wikidata.org/w/api.php?action=wbsearchentities&language="+$scope.search.language+"&format=json&search=";
+        $scope.search.url = "https://www.wikidata.org/w/api.php?action=wbsearchentities&language="+$scope.search.language+"&strictlanguage=true&format=json&responselanginfo=true&uselang="+$scope.search.language+"&errorlang="+$scope.search.language+"&search=";
         $scope.page.translation = YAML.load('web/translation.yml')[$scope.search.language];
     }
     $scope.setLanguage = function (language) {
         $scope.search.languageDefinition = true;
         $scope.search.language = language;
         $scope.page.translation = YAML.load('web/translation.yml')[$scope.search.language];
-        $scope.search.url = "https://www.wikidata.org/w/api.php?action=wbsearchentities&language="+$scope.search.language+"&format=json&search=";
+        $scope.search.url = "https://www.wikidata.org/w/api.php?action=wbsearchentities&language="+$scope.search.language+"&strictlanguage=true&format=json&responselanginfo=true&uselang="+$scope.search.language+"&errorlang="+$scope.search.language+"&search=";
         $cookieStore.put('id_histoiredelart_language', $scope.search.language);
     };
     /* Language modal management */
@@ -72,9 +80,22 @@ app.controller("HomeCtrl", function ($scope, $http, $sce, $timeout, $parse, $coo
     };
     /* HomeTop management */
 
+    /* IP management */
+    var urlIp = "https://api.ipify.org?format=jsonp";
+    var trustedUrlIp = $sce.trustAsResourceUrl(urlIp);
+    $http.jsonp(trustedUrlIp, {jsonpCallbackParam: 'callback'})
+        .then(function (response) {
+            $scope.user.ip = response.data.ip;
+        });
+    /* IP management */
+
     /* Get item */
     $http.get(server+'/entities?random=true').then(function (response) {
-        $scope.item = response.data[0];
+        $scope.item.qwd = response.data[0].qwd;
+        $scope.item.image = response.data[0].image;
+        $scope.item.label = response.data[0].label;
+        $scope.item.id = response.data[0].id;
+        getThumbnail();
 
         var url = "http://www.wikidata.org/w/api.php?action=wbgetentities&ids=Q"+$scope.item.qwd+"&format=json";
         var trustedUrl = $sce.trustAsResourceUrl(url);
@@ -93,68 +114,95 @@ app.controller("HomeCtrl", function ($scope, $http, $sce, $timeout, $parse, $coo
         $scope.item.description = getProperty($scope.wdtItem.descriptions);
         if($scope.wdtItem.claims["P136"] !== undefined) {
             /* P136 == Genre */
-            $scope.item.genre = getProperty($scope.wdtItem.claims["P136"]);
+            $scope.item.genreLength = $scope.wdtItem.claims["P136"].length;
+            loadClaims($scope.wdtItem.claims["P136"], "genre", "genreLength");
         }
         if($scope.wdtItem.claims["P571"] !== undefined) {
             /* P571 == Date of creation */
-            $scope.item.date_creation = getProperty($scope.wdtItem.claims["P571"]);
+            $scope.item.date_creationLength = $scope.wdtItem.claims["P571"].length;
+            loadClaims($scope.wdtItem.claims["P571"], "date_creation", "date_creationLength");
         }
         if($scope.wdtItem.claims["P170"] !== undefined) {
             /* P170 == Creator */
-            $scope.item.creator = getProperty($scope.wdtItem.claims["P170"]);
+            $scope.item.creatorLength = $scope.wdtItem.claims["P170"].length;
+            loadClaims($scope.wdtItem.claims["P170"], "creator", "creatorLength");
         }
         if($scope.wdtItem.claims["P195"] !== undefined) {
             /* P195 == Collection */
-            $scope.item.collection = getProperty($scope.wdtItem.claims["P195"]);
+            $scope.item.collectionLength = $scope.wdtItem.claims["P195"].length;
+            loadClaims($scope.wdtItem.claims["P195"], "collection", "collectionLength");
         }
         if($scope.wdtItem.claims["P973"] !== undefined) {
             /* P973 == Described at */
-            $scope.item.url = getProperty($scope.wdtItem.claims["P973"]);
+            $scope.item.urlLength = $scope.wdtItem.claims["P973"].length;
+            loadClaims($scope.wdtItem.claims["P973"], "url", "urlLength");
         }
 
         if($scope.wdtItem.claims["P180"] !== undefined) {
             /* P180 == Depicts */
-            $scope.depict.wdtDepictsLength = $scope.wdtItem.claims["P180"].length;
-            loadClaims($scope.wdtItem.claims["P180"]);
+            $scope.item.wdtDepictsLength = $scope.wdtItem.claims["P180"].length;
+            loadClaims($scope.wdtItem.claims["P180"], "wdtDepicts", "wdtDepictsLength");
         }
+    }
+    function getThumbnail() {
+        $scope.item.imageOriginal = $scope.item.image;
+        $scope.item.imageName = decodeURI($scope.item.image);
+        $scope.item.imageName = $scope.item.imageName.replace("http://commons.wikimedia.org/wiki/Special:FilePath/", "").replace(/ /g, "_").replace(/%2C/g, ",");
+        var hash = md5($scope.item.imageName);
+        $scope.item.image = "https://upload.wikimedia.org/wikipedia/commons/thumb/"+hash.substring(0,1)+"/"+hash.substring(0,2)+"/"+$scope.item.imageName+"/400px-"+$scope.item.imageName;
+        $http.get($scope.item.image).
+            then(function (response) {
+                //console.log(response);
+            },
+            function(data) {
+                console.log(data);
+                $scope.item.image = $scope.item.imageOriginal;
+            });
     }
     /* Get item */
 
     /* Actions */
     $scope.newDepict = function() {
-        $scope.depict.depicts.push($scope.search.selectedObject);
+        $scope.item.depicts.push($scope.search.selectedObject);
         $scope.search.searchStr = "";
     };
 
     $scope.removeDepict = function(dDepict) {
-        for(depict in $scope.depict.depicts) {
-            if(dDepict["qwd"] === $scope.depict.depicts[depict]["qwd"]) {
-                $scope.depict.depicts.splice(depict, 1);
+        for(depict in $scope.item.depicts) {
+            if(dDepict["qwd"] === $scope.item.depicts[depict]["qwd"]) {
+                $scope.item.depicts.splice(depict, 1);
             }
         }
     };
 
     $scope.persist = function() {
         $scope.loadThanks = true;
-        if($scope.depict.depicts.length > 0) {
+        if($scope.item.depicts.length > 0) {
             var qwds = [];
-            for(depict in $scope.depict.depicts) {
-                qwds.push($scope.depict.depicts[depict]["qwd"]);
+            for(depict in $scope.item.depicts) {
+                qwds.push($scope.item.depicts[depict]["qwd"]);
             }
             $http.patch(server+'/entities/'+$scope.item.id, {"listDepicts": qwds}).then(function (response) {
-                $route.reload();
+                $http.post(server+'/logs', {"status": "updateDepicts", "ip": $scope.user.ip, "entity": $scope.item.id}).then(function (response) {
+                    $route.reload();
+                });
             });
+
         }
     };
 
     $scope.nothingToAdd = function() {
         $scope.loadThanks = true;
-        $route.reload();
+        $http.post(server+'/logs', {"status": "nothingToAdd", "ip": $scope.user.ip, "entity": $scope.item.id}).then(function (response) {
+            $route.reload();
+        });
     };
 
     $scope.pass = function() {
         $scope.loadThanks = true;
-        $route.reload();
+        $http.post(server+'/logs', {"status": "pass", "ip": $scope.user.ip, "entity": $scope.item.id}).then(function (response) {
+            $route.reload();
+        });
     };
     /* Actions */
 
@@ -233,51 +281,59 @@ app.controller("HomeCtrl", function ($scope, $http, $sce, $timeout, $parse, $coo
     /* AnguComplete Fork */
 
     /* Function: depicts */
-    function loadClaims(claimP180) {
+    function loadClaims(claimP180, scopeName, scopeLength) {
         for(var iClaim in claimP180) {
             var entry = claimP180[iClaim];
 
-            if(entry.mainsnak.datavalue.value.id !== undefined) {
+            if(entry.mainsnak.datatype === "time") {
+                var datavalue = entry.mainsnak.datavalue;
+                $scope.item[scopeName].push({label: datavalue.value.time, type: "time", precision: datavalue.value.precision});
+                console.log($scope.item);
+            } else if(entry.mainsnak.datavalue.value.id !== undefined) {
                 var url = "http://www.wikidata.org/w/api.php?action=wbgetentities&ids="+entry.mainsnak.datavalue.value.id+"&format=json";
                 var trustedUrl = $sce.trustAsResourceUrl(url);
 
                 $http.jsonp(trustedUrl, {jsonpCallbackParam: 'callback'})
                     .then(function (response) {
-                        //console.log(response.data['entities']);
-                        $scope.depict.wdtDepictsConstruction.push(response.data['entities']);
-                        encodeClaims();
+                        $scope.item[scopeName].push(response.data['entities']);
+                        encodeClaims(scopeName, scopeLength);
                     });
             }
         }
     }
-    function encodeClaims() {
-        //console.log($scope.depict.wdtDepictsConstruction);
-        if ($scope.depict.wdtDepictsConstruction.length === $scope.depict.wdtDepictsLength) {
-            for(var wdtDepictId in $scope.depict.wdtDepictsConstruction) {
-                var wdtDepict = $scope.depict.wdtDepictsConstruction[wdtDepictId];
-                for(var itemQwd in wdtDepict) {
-                    var item = wdtDepict[itemQwd];
-                    $scope.depict.wdtDepicts.push({qwd: itemQwd, label: getClaimLabel(item)});
+    function encodeClaims(scopeName, scopeLength) {
+        //console.log($scope.depict[scopeName]);
+        if ($scope.item[scopeName].length === $scope.item[scopeLength]) {
+            var newScopeValue = [];
+            for(var wdtClaimId in $scope.item[scopeName]) {
+                var wdtClaim = $scope.item[scopeName][wdtClaimId];
+                for(var itemQwd in wdtClaim) {
+                    var item = wdtClaim[itemQwd];
+                    if(item.labels !== undefined) {
+                        newScopeValue.push({qwd: itemQwd, label: getClaimLabel(item.labels), type: "entity"});
+                    }
                 }
             }
+            $scope.item[scopeName] = newScopeValue;
+            //console.log($scope.item[scopeName]);
         }
     }
-    function getClaimLabel(item) {
-        var labels = item.labels;
+    function getClaimLabel(labels) {
+        //console.log(labels);
         if(labels[$scope.search.language] !== undefined) {
-            return item.labels[$scope.search.language].value;
+            return labels[$scope.search.language].value;
         } else if(labels.en !== undefined) {
-            return item.labels.en.value;
+            return labels.en.value;
         } else if(labels.fr !== undefined) {
-            return item.labels.fr.value;
+            return labels.fr.value;
         } else if(labels.it !== undefined) {
-            return item.labels.it.value;
+            return labels.it.value;
         } else if(labels.de !== undefined) {
-            return item.labels.de.value;
+            return labels.de.value;
         } else if(labels.nl !== undefined) {
-            return item.labels.nl.value;
+            return labels.nl.value;
         } else if(labels.es !== undefined) {
-            return item.labels.es.value;
+            return labels.es.value;
         }
     }
     /* Function: depicts */

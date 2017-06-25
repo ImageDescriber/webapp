@@ -43,3 +43,11 @@
 #HomeContainer .jumbotron {
     margin-bottom: 0;
 }
+
+#HomeContainer .h2a {
+    color: #222;
+}
+
+#HomeContainer .h2a:focus, #HomeContainer .h2a:hover {
+    text-decoration: underline;
+}
