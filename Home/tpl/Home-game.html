@@ -1,0 +1,38 @@
+<hr />
+<div id="game">
+    <div ng-if="user.xp == 0">
+        <strong>Tu es niveau 0 !</strong><br />
+        Saisis une information pour commencer à monter dans le classement <i class="fa fa-smile-o"></i>
+    </div>
+    <div ng-if="user.xp > 0">
+        <div><label>Tu es niveau {{ user.level }} ! Plus que {{ user.xpUp-user.xp }} points avant le niveau {{ user.level+1 }}.</label></div>
+        <div class="row">
+            <div class="col-sm-10">
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" aria-valuenow="{{ user.xp-user.xpDown }}" aria-valuemin="0" aria-valuemax="{{ user.xpUp-user.xpDown }}" style="width: {{ ((user.xp-user.xpDown)*100)/(user.xpUp-user.xpDown) }}%">
+                        <span class="sr-only">{{ ((user.xp-user.xpDown)*100)/(user.xpUp-user.xpDown) }}% Complete</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2"><i class="fa fa-chevron-right"></i> Niveau {{ user.level+1 }}</div>
+        </div>
+    </div>
+</div>
+
+<table class="table table-striped table-borded" style="margin-top: 30px;">
+    <caption>Top contributors</caption>
+    <tr>
+        <th>#</th>
+        <th>Points</th>
+    </tr>
+    <tr ng-repeat="rankF in user.rank.firsts">
+        <td ng-if="rankF != null">{{ rankF._embedded.computed }}</td>
+        <td ng-if="rankF == null" class="success">{{ user.rank.computed }}</td>
+        <td ng-if="rankF != null">{{ rankF.value }}</td>
+        <td ng-if="rankF == null" class="success">{{ user.xp }}</td>
+    </tr>
+    <tr ng-if="user.rank.computed > user.rank.firsts.length" class="success">
+        <td>{{ user.rank.computed }}</td>
+        <td>{{ user.xp }}</td>
+    </tr>
+</table>

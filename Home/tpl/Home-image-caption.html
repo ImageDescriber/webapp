@@ -1,0 +1,23 @@
+<div class="list-group">
+    <div class="list-group-item">
+        <h2 class="list-group-item-heading"><a href="https://www.wikidata.org/wiki/Q{{ item.qwd }}" target="_blank" class="h2a">{{ item.label }}</a></h2>
+        <p>{{ item.description }}</p>
+        <span ng-if="item.url.length > 0"><span ng-if="$first == false"> - </span><a ng-repeat="url in item.url" href="{{ url.value }}" target="_blank">{{ page.translation.home.id13 }}</a></span>
+    </div>
+    <dl class="list-group-item dl-horizontal" ng-if="item.creator.length > 0">
+        <dt>{{ page.translation.home.id14 }}</dt>
+        <dd><span ng-repeat="creator in item.creator"><br ng-if="$first == false" /><a href="http://wikidata.org/wiki/{{ creator.qwd }}" target="_blank">{{ creator.label }}</a></span></dd>
+    </dl>
+    <dl class="list-group-item dl-horizontal" ng-if="item.date_creation.length > 0">
+        <dt>{{ page.translation.home.id15 }}</dt>
+        <dd><span ng-repeat="date_creation in item.date_creation"><br ng-if="$first == false" />{{ date_creation.label }}</span></dd>
+    </dl>
+    <dl class="list-group-item dl-horizontal" ng-if="item.collection.length > 0">
+        <dt>{{ page.translation.home.id16 }}</dt>
+        <dd><span ng-repeat="collection in item.collection"><br ng-if="$first == false" /><a href="http://wikidata.org/wiki/{{ collection.qwd }}" target="_blank">{{ collection.label }}</a></span></dd>
+    </dl>
+    <dl class="list-group-item dl-horizontal" ng-if="item.genre.length > 0">
+        <dt>{{ page.translation.home.id17 }}</dt>
+        <dd><span ng-repeat="genre in item.genre"><br ng-if="$first == false" /><a href="http://wikidata.org/wiki/{{ genre.qwd }}" target="_blank">{{ genre.label }}</a></span></dd>
+    </dl>
+</div>

@@ -51,3 +51,12 @@
 #HomeContainer .h2a:focus, #HomeContainer .h2a:hover {
     text-decoration: underline;
 }
+
+#HomeContainer #game {
+    border-left: solid 10px #EEE;
+    padding: 10px;
+}
+
+#HomeContainer #game .progress {
+    margin-bottom: 0;
+}

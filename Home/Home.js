@@ -1,6 +1,6 @@
 app.controller("HomeCtrl", function ($scope, $http, $sce, $timeout, $parse, $cookies, $cookieStore, $route) {
     /* -- Scope and variables definition -- */
-    var server = "http://localhost:8888/ImageDescription/api/web/app_dev.php"; //http://imagedescription.histoiredelart.fr/api/web
+    var api = "http://localhost:8888/ImageDescription/api/web/app_dev.php"; //http://imagedescription.histoiredelart.fr/api/web
 
     /* Variables */
     $scope.page = {
@@ -43,14 +43,25 @@ app.controller("HomeCtrl", function ($scope, $http, $sce, $timeout, $parse, $coo
         wdtDepictsLength: 0
     };
     $scope.user = {
-        ip: null
+        ip: null,
+        xp: {
+            current: 0,
+            up: 5,
+            down: 0
+        },
+        level: 1,
+        rank: {
+            id: null,
+            computed: null,
+            firsts: null
+        }
     };
     /* Variables */
 
     /* Language modal management */
-    if($cookieStore.get('id_histoiredelart_language') !== undefined) {
+    if($cookieStore.get('histoiredelart_wikidata_id_language') !== undefined) {
         $scope.search.languageDefinition = true;
-        $scope.search.language = $cookieStore.get('id_histoiredelart_language');
+        $scope.search.language = $cookieStore.get('histoiredelart_wikidata_id_language');
         $scope.search.url = "https://www.wikidata.org/w/api.php?action=wbsearchentities&language="+$scope.search.language+"&strictlanguage=true&format=json&responselanginfo=true&uselang="+$scope.search.language+"&errorlang="+$scope.search.language+"&search=";
         $scope.page.translation = YAML.load('web/translation.yml')[$scope.search.language];
     }
@@ -59,26 +70,56 @@ app.controller("HomeCtrl", function ($scope, $http, $sce, $timeout, $parse, $coo
         $scope.search.language = language;
         $scope.page.translation = YAML.load('web/translation.yml')[$scope.search.language];
         $scope.search.url = "https://www.wikidata.org/w/api.php?action=wbsearchentities&language="+$scope.search.language+"&strictlanguage=true&format=json&responselanginfo=true&uselang="+$scope.search.language+"&errorlang="+$scope.search.language+"&search=";
-        $cookieStore.put('id_histoiredelart_language', $scope.search.language);
+        $cookieStore.put('histoiredelart_wikidata_id_language', $scope.search.language);
     };
     /* Language modal management */
 
     /* HomeTop management */
-    if($cookieStore.get('id_histoiredelart_topmanagement') !== undefined) {
-        $scope.topMangement = $cookieStore.get('id_histoiredelart_topmanagement');
+    if($cookieStore.get('histoiredelart_wikidata_id_topmanagement') !== undefined) {
+        $scope.topMangement = $cookieStore.get('histoiredelart_wikidata_id_topmanagement');
     } else {
         $scope.topMangement = "up";
     }
     $scope.topManagement = function() {
         if($scope.topMangement === "up") {
             $scope.topMangement = "down";
-            $cookieStore.put('id_histoiredelart_topmanagement', 'down');
+            $cookieStore.put('histoiredelart_wikidata_id_topmanagement', 'down');
         } else if($scope.topMangement === "down") {
             $scope.topMangement = 'up';
-            $cookieStore.put('id_histoiredelart_topmanagement', 'up');
+            $cookieStore.put('histoiredelart_wikidata_id_topmanagement', 'up');
         }
     };
     /* HomeTop management */
+
+    /* Game management*/
+    if($cookieStore.get('histoiredelart_wikidata_id_game_xp') !== undefined) {
+        $scope.user.xp.current = $cookieStore.get('histoiredelart_wikidata_id_game_xp');
+        $scope.user.level = $cookieStore.get('histoiredelart_wikidata_id_game_level');
+        $scope.user.rank.id = $cookieStore.get('histoiredelart_wikidata_id_game_rank_id');
+
+        if($scope.user.level === 1) {
+            $scope.user.xp.up = 10;
+            $scope.user.xp.down = 0;
+        } else if($scope.user.level > 1) {
+            $scope.user.xp.up = 5*(2^($scope.user.level));
+            $scope.user.xp.down = 5*(2^($scope.user.level-1));
+        }
+        if($scope.user.xp.down < 0) {$scope.user.xp.down = 0;}
+
+        $http.get(api+'/ranks/'+$scope.user.rank.id, {value: $scope.user.xp.current}).then(function (response) {
+            $scope.user.rank.computed = response.data._embedded.computed;
+            $scope.user.rank.firsts = response.data._embedded.firsts;
+        });
+    } else {
+        $cookieStore.put('histoiredelart_wikidata_id_game_xp', $scope.user.xp.current);
+        $cookieStore.put('histoiredelart_wikidata_id_game_level', $scope.user.level);
+        $http.post(api+'/ranks', {value: $scope.user.xp.current}).then(function (response) {
+            $cookieStore.put('histoiredelart_wikidata_id_game_rank_id', response.data.id);
+            $scope.user.rank.computed = response.data._embedded.computed;
+            $scope.user.rank.firsts = response.data._embedded.firsts;
+        });
+    }
+    /* Game management*/
 
     /* IP management */
     var urlIp = "https://api.ipify.org?format=jsonp";
@@ -90,7 +131,7 @@ app.controller("HomeCtrl", function ($scope, $http, $sce, $timeout, $parse, $coo
     /* IP management */
 
     /* Get item */
-    $http.get(server+'/entities?random=true').then(function (response) {
+    $http.get(api+'/entities?random=true').then(function (response) {
         $scope.item.qwd = response.data[0].qwd;
         $scope.item.image = response.data[0].image;
         $scope.item.label = response.data[0].label;
@@ -165,6 +206,7 @@ app.controller("HomeCtrl", function ($scope, $http, $sce, $timeout, $parse, $coo
     $scope.newDepict = function() {
         $scope.item.depicts.push($scope.search.selectedObject);
         $scope.search.searchStr = "";
+        gameCreditDepict();
     };
 
     $scope.removeDepict = function(dDepict) {
@@ -176,14 +218,15 @@ app.controller("HomeCtrl", function ($scope, $http, $sce, $timeout, $parse, $coo
     };
 
     $scope.persist = function() {
+        gameCreditSubmit();
         $scope.loadThanks = true;
         if($scope.item.depicts.length > 0) {
             var qwds = [];
             for(depict in $scope.item.depicts) {
                 qwds.push($scope.item.depicts[depict]["qwd"]);
             }
-            $http.patch(server+'/entities/'+$scope.item.id, {"listDepicts": qwds}).then(function (response) {
-                $http.post(server+'/logs', {"status": "updateDepicts", "ip": $scope.user.ip, "entity": $scope.item.id}).then(function (response) {
+            $http.patch(api+'/entities/'+$scope.item.id, {"listDepicts": qwds}).then(function (response) {
+                $http.post(api+'/logs', {"status": "updateDepicts", "ip": $scope.user.ip, "entity": $scope.item.id}).then(function (response) {
                     $route.reload();
                 });
             });
@@ -193,14 +236,14 @@ app.controller("HomeCtrl", function ($scope, $http, $sce, $timeout, $parse, $coo
 
     $scope.nothingToAdd = function() {
         $scope.loadThanks = true;
-        $http.post(server+'/logs', {"status": "nothingToAdd", "ip": $scope.user.ip, "entity": $scope.item.id}).then(function (response) {
+        $http.post(api+'/logs', {"status": "nothingToAdd", "ip": $scope.user.ip, "entity": $scope.item.id}).then(function (response) {
             $route.reload();
         });
     };
 
     $scope.pass = function() {
         $scope.loadThanks = true;
-        $http.post(server+'/logs', {"status": "pass", "ip": $scope.user.ip, "entity": $scope.item.id}).then(function (response) {
+        $http.post(api+'/logs', {"status": "pass", "ip": $scope.user.ip, "entity": $scope.item.id}).then(function (response) {
             $route.reload();
         });
     };
@@ -359,4 +402,28 @@ app.controller("HomeCtrl", function ($scope, $http, $sce, $timeout, $parse, $coo
             return "";
         }
     }
+
+    /* Game management*/
+    function gameCreditDepict() {
+        $scope.user.xp.current += 1;
+    }
+    function gameCreditSubmit() {
+        $scope.user.xp.current += 3;
+    }
+    $scope.$watch('user.xp.current', function() {
+        console.log($scope.user.xp.current);
+        $cookieStore.put('histoiredelart_wikidata_id_game_xp', $scope.user.xp.current);
+        $http.patch(api+'/ranks/'+$scope.user.rank.id, {value: $scope.user.xp.current}).then(function (response) {
+            console.log(response.data);
+            $scope.user.rank.computed = response.data._embedded.computed;
+            $scope.user.rank.firsts = response.data._embedded.firsts;
+        });
+        if($scope.user.xp.current >= $scope.user.xp.up) {
+            $scope.user.level += 1;
+            $cookieStore.put('histoiredelart_wikidata_id_game_level', $scope.user.level);
+            $scope.user.xp.down = $scope.user.xp.up;
+            $scope.user.xp.up = $scope.user.xp.up*2;
+        }
+    });
+    /* Game management*/
 });
