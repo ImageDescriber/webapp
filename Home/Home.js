@@ -1,4 +1,4 @@
-app.controller("HomeCtrl", function ($scope, $http, $sce, $timeout, $parse, $cookies, $cookieStore, $route) {
+app.controller("HomeCtrl", function ($scope, $http, $sce, $timeout, $parse, $cookies, $cookieStore, $route, $interpolate) {
     /* -- Scope and variables definition -- */
     var api = "http://localhost:8888/ImageDescription/api/web/app_dev.php"; //http://imagedescription.histoiredelart.fr/api/web
 
@@ -46,7 +46,7 @@ app.controller("HomeCtrl", function ($scope, $http, $sce, $timeout, $parse, $coo
         ip: null,
         xp: {
             current: 0,
-            up: 5,
+            up: 10,
             down: 0
         },
         level: 1,
@@ -64,6 +64,9 @@ app.controller("HomeCtrl", function ($scope, $http, $sce, $timeout, $parse, $coo
         $scope.search.language = $cookieStore.get('histoiredelart_wikidata_id_language');
         $scope.search.url = "https://www.wikidata.org/w/api.php?action=wbsearchentities&language="+$scope.search.language+"&strictlanguage=true&format=json&responselanginfo=true&uselang="+$scope.search.language+"&errorlang="+$scope.search.language+"&search=";
         $scope.page.translation = YAML.load('web/translation.yml')[$scope.search.language];
+        for(var elem in $scope.page.translation.home) {
+            $scope.page.translation.home[elem] = $interpolate($scope.page.translation.home[elem])($scope);
+        }
     }
     $scope.setLanguage = function (language) {
         $scope.search.languageDefinition = true;
@@ -71,7 +74,13 @@ app.controller("HomeCtrl", function ($scope, $http, $sce, $timeout, $parse, $coo
         $scope.page.translation = YAML.load('web/translation.yml')[$scope.search.language];
         $scope.search.url = "https://www.wikidata.org/w/api.php?action=wbsearchentities&language="+$scope.search.language+"&strictlanguage=true&format=json&responselanginfo=true&uselang="+$scope.search.language+"&errorlang="+$scope.search.language+"&search=";
         $cookieStore.put('histoiredelart_wikidata_id_language', $scope.search.language);
+        for(var elem in $scope.page.translation.home) {
+            $scope.page.translation.home[elem] = $interpolate($scope.page.translation.home[elem])($scope);
+        }
     };
+    for(var elem in $scope.page.translation.home) {
+        $scope.page.translation.home[elem] = $interpolate($scope.page.translation.home[elem])($scope);
+    }
     /* Language modal management */
 
     /* HomeTop management */
@@ -101,10 +110,9 @@ app.controller("HomeCtrl", function ($scope, $http, $sce, $timeout, $parse, $coo
             $scope.user.xp.up = 10;
             $scope.user.xp.down = 0;
         } else if($scope.user.level > 1) {
-            $scope.user.xp.up = 5*(2^($scope.user.level));
-            $scope.user.xp.down = 5*(2^($scope.user.level-1));
+            $scope.user.xp.up = 10*(Math.pow(2,$scope.user.level-1));
+            $scope.user.xp.down = 10*(Math.pow(2,$scope.user.level-2));
         }
-        if($scope.user.xp.down < 0) {$scope.user.xp.down = 0;}
 
         $http.get(api+'/ranks/'+$scope.user.rank.id, {value: $scope.user.xp.current}).then(function (response) {
             $scope.user.rank.computed = response.data._embedded.computed;
@@ -330,7 +338,7 @@ app.controller("HomeCtrl", function ($scope, $http, $sce, $timeout, $parse, $coo
 
             if(entry.mainsnak.datatype === "time") {
                 var datavalue = entry.mainsnak.datavalue;
-                $scope.item[scopeName].push({label: datavalue.value.time, type: "time", precision: datavalue.value.precision});
+                $scope.item[scopeName].push({label: datavalue.value.time, date: new Date(datavalue.value.time.substr(1)), type: "time", precision: datavalue.value.precision});
                 console.log($scope.item);
             } else if(entry.mainsnak.datavalue.value.id !== undefined) {
                 var url = "http://www.wikidata.org/w/api.php?action=wbgetentities&ids="+entry.mainsnak.datavalue.value.id+"&format=json";
@@ -411,19 +419,32 @@ app.controller("HomeCtrl", function ($scope, $http, $sce, $timeout, $parse, $coo
         $scope.user.xp.current += 3;
     }
     $scope.$watch('user.xp.current', function() {
-        console.log($scope.user.xp.current);
+        $scope.user.level = Math.ceil($scope.user.xp.current/10);
+        $cookieStore.put('histoiredelart_wikidata_id_game_level', $scope.user.level);
+
+        if($scope.user.xp.current > $scope.user.xp.up) {
+            $scope.user.xp.down = $scope.user.xp.up;
+            $scope.user.xp.up = $scope.user.xp.up * 2;
+        }
+
         $cookieStore.put('histoiredelart_wikidata_id_game_xp', $scope.user.xp.current);
         $http.patch(api+'/ranks/'+$scope.user.rank.id, {value: $scope.user.xp.current}).then(function (response) {
             console.log(response.data);
             $scope.user.rank.computed = response.data._embedded.computed;
             $scope.user.rank.firsts = response.data._embedded.firsts;
         });
-        if($scope.user.xp.current >= $scope.user.xp.up) {
-            $scope.user.level += 1;
-            $cookieStore.put('histoiredelart_wikidata_id_game_level', $scope.user.level);
-            $scope.user.xp.down = $scope.user.xp.up;
-            $scope.user.xp.up = $scope.user.xp.up*2;
-        }
     });
+    $scope.progressbar = function() {
+        if($scope.user.level === 1) { return 'progress-bar-info'; }
+        else if($scope.user.level === 2) { return 'progress-bar-info progress-bar-striped'; }
+        else if($scope.user.level === 3) { return ''; }
+        else if($scope.user.level === 4) { return 'progress-bar-striped'; }
+        else if($scope.user.level === 5) { return 'progress-bar-success'; }
+        else if($scope.user.level === 6) { return 'progress-bar-success progress-bar-striped'; }
+        else if($scope.user.level === 7) { return 'progress-bar-warning'; }
+        else if($scope.user.level === 8) { return 'progress-bar-warning progress-bar-striped'; }
+        else if($scope.user.level === 9) { return 'progress-bar-danger'; }
+        else if($scope.user.level >= 10) { return 'progress-bar-danger progress-bar-striped'; }
+    };
     /* Game management*/
 });

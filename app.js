@@ -1,4 +1,5 @@
-var app = angular.module("IDApp", ["ngRoute", "ngCookies"]);
+
+var app = angular.module("IDApp", ["ngRoute", "ngCookies", "ngSanitize"]);
 app.config(['$routeProvider', function($routeProvider) {
     $routeProvider
         .when("/", {

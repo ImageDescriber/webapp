@@ -10,7 +10,13 @@
     </dl>
     <dl class="list-group-item dl-horizontal" ng-if="item.date_creation.length > 0">
         <dt>{{ page.translation.home.id15 }}</dt>
-        <dd><span ng-repeat="date_creation in item.date_creation"><br ng-if="$first == false" />{{ date_creation.label }}</span></dd>
+        <dd>
+            <span ng-repeat="date_creation in item.date_creation"><br ng-if="$first == false" />
+                <span ng-if="date_creation.precision == 9">{{ date_creation.date | date:'yyyy' }}</span>
+                <span ng-if="date_creation.precision == 10">{{ date_creation.date | date:'MM-yyyy' }}</span>
+                <span ng-if="date_creation.precision == 11">{{ date_creation.date | date:'dd-MM-yyyy' }}</span>
+            </span>
+        </dd>
     </dl>
     <dl class="list-group-item dl-horizontal" ng-if="item.collection.length > 0">
         <dt>{{ page.translation.home.id16 }}</dt>
