@@ -1,6 +1,6 @@
 <div id="listAddedDepicts">
-    <span class="label label-default" ng-repeat="depict in item.depicts">{{ depict.label }} <a ng-click="removeDepict(depict)" class="a-label"><i class="fa fa-remove"></i></a></span>
+    <span class="label label-default" ng-repeat="depict in item.depicts">{{ depict.label }} <a ng-click="submit.removeDepict(depict)" class="a-label"><i class="fa fa-remove"></i></a></span>
 </div>
 <div ng-if="item.depicts.length > 0" style="margin-top: 20px;">
-    <button class="btn btn-lg btn-block btn-primary" ng-click="persist()">{{ page.translation.home.id8 }}</button>
+    <button class="btn btn-lg btn-block btn-primary" ng-click="submit.persist()"><span ng-if="submit.loading == false">{{ page.translation.home.id8 }}</span><i class="fa fa-spin fa-circle-o-notch" ng-if="submit.loading == true"></i></button>
 </div>

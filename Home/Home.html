@@ -1,7 +1,7 @@
 <div id="HomeContainer">
     <div class="row" ng-include="'Home/tpl/Home-top.html'"></div>
     <div class="row" ng-include="'Home/tpl/Home-language.html'"></div>
-    <div id="body">
+    <div id="body" ng-if="page.status == 'view'">
         <div class="row" ng-if="page.loading == true">
             <div class="col-xs-12 text-center" style="font-size: 200%">
                 <i class="fa fa-5x fa-spin fa-circle-o-notch"></i>
@@ -9,8 +9,12 @@
         </div>
         <div class="row" ng-if="page.loading == false">
             <div class="col-sm-6 text-center" ng-include="'Home/tpl/Home-image.html'"></div>
-            <div class="col-sm-6" ng-include="'Home/tpl/Home-depict.html'"></div>
-            <div class="col-sm-6" ng-include="'Home/tpl/Home-game.html'"></div>
+            <div class="col-sm-6">
+                <div ng-include="'Home/tpl/Home-depict.html'"></div>
+                <div ng-include="'Home/tpl/Home-game.html'"></div>
+            </div>
         </div>
     </div>
+    <div id="body" ng-if="page.status == '404'" ng-include="'Home/tpl/404.html'"></div>
+    <div id="body" ng-if="page.status == 'noMoreResults'" ng-include="'Home/tpl/noMoreResults.html'"></div>
 </div>

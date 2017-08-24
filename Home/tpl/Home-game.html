@@ -5,7 +5,7 @@
         {{ page.translation.home.gameid2 }} <i class="fa fa-smile-o"></i>
     </div>
     <div ng-if="user.xp.current > 0">
-        <div><label ng-bind-html="page.translation.home.gameid3"></label></div>
+        <div><label>{{ page.translation.home.gameid3 }} {{ user.level }} {{ page.translation.home.gameid11 }} {{ user.xp.up - user.xp.current }} {{ page.translation.home.gameid12 }} {{ user.level+1 }}</label></div>
         <div class="row">
             <div class="col-sm-10">
                 <div class="progress">
@@ -14,7 +14,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-2"><i class="fa fa-chevron-right"></i><span ng-bind-html="page.translation.home.gameid4"></span></div>
+            <div class="col-sm-2"><i class="fa fa-chevron-right"></i> <span ng-bind-html="page.translation.home.gameid4"></span> {{ user.level+1 }}</div>
         </div>
     </div>
 </div>
@@ -24,8 +24,8 @@
         <div class="pull-right">
             <span ng-if="user.rank.computed == 1" ng-bind-html="page.translation.home.gameid5"></span>
             <span ng-if="user.rank.computed == 2" ng-bind-html="page.translation.home.gameid6"></span>
-            <span ng-if="user.rank.computed > 2 && user.rank.computed <= 5" ng-bind-html="page.translation.home.gameid7"></span>
-            <span ng-if="user.rank.computed > 5 && user.rank.computed <= 50" ng-bind-html="page.translation.home.gameid8"></span>
+            <span ng-if="user.rank.computed > 2 && user.rank.computed <= 5"><span ng-bind-html="page.translation.home.gameid7"></span></span>
+            <span ng-if="user.rank.computed > 5 && user.rank.computed <= 50">{{ user.rank.computed }} - <span ng-bind-html="page.translation.home.gameid8"></span></span>
             <span ng-if="user.rank.computed > 50">{{ user.rank.computed }}</span>
         </div>
         {{ page.translation.home.gameid9 }}

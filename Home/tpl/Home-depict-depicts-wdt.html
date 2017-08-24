@@ -9,9 +9,9 @@
         </div>
     </div>
     <div ng-if="item.depicts.length == 0" style="margin-top: 20px;">
-        <button class="btn btn-block btn-primary" ng-click="nothingToAdd()">{{ page.translation.home.id10 }}</button>
+        <button class="btn btn-block btn-primary" ng-click="submit.nothingToAdd()"><span ng-if="submit.loading == false">{{ page.translation.home.id10 }}</span><i class="fa fa-spin fa-circle-o-notch" ng-if="submit.loading == true"></i></button>
     </div>
 </div>
 <div ng-if="item.depicts.length == 0 && item.wdtDepicts.length == 0" style="margin-top: 20px;">
-    <button class="btn btn-block btn-warning" ng-click="pass()">{{ page.translation.home.id11 }}</button>
+    <button class="btn btn-block btn-warning" ng-click="submit.pass()"><span ng-if="submit.loading == false">{{ page.translation.home.id11 }}</span><i class="fa fa-spin fa-circle-o-notch" ng-if="submit.loading == true"></i></button>
 </div>

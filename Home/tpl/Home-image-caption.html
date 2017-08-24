@@ -1,6 +1,13 @@
 <div class="list-group">
     <div class="list-group-item">
-        <h2 class="list-group-item-heading"><a href="https://www.wikidata.org/wiki/Q{{ item.qwd }}" target="_blank" class="h2a">{{ item.label }}</a></h2>
+        <div class="pull-right">
+            <a href="https://www.wikidata.org/wiki/Q{{ item.qwd }}" target="_blank" title="{{ page.translation.home.id18 }}"><img src="./web/images/wikidata-icon.png" style="max-height: 30px; max-width: 30px;" /></a>
+            <a href="{{ item.imageCommons }}" target="_blank" title="{{ page.translation.home.id21 }}"><img src="./web/images/commons-icon.png" style="max-height: 30px; max-width: 30px;" /></a>
+        </div>
+        <h2 class="list-group-item-heading" ng-if="item.label != '' && item.label != null">
+            <a href="https://www.wikidata.org/wiki/Q{{ item.qwd }}" target="_blank" class="h2a" title="{{ page.translation.home.id18 }}"><span>{{ item.label }}</span></a>
+        </h2>
+        <strong ng-if="item.label == '' || item.label == null">{{ page.translation.home.id20 }}</strong>
         <p>{{ item.description }}</p>
         <span ng-if="item.url.length > 0"><span ng-if="$first == false"> - </span><a ng-repeat="url in item.url" href="{{ url.value }}" target="_blank">{{ page.translation.home.id13 }}</a></span>
     </div>
@@ -12,6 +19,8 @@
         <dt>{{ page.translation.home.id15 }}</dt>
         <dd>
             <span ng-repeat="date_creation in item.date_creation"><br ng-if="$first == false" />
+                <span ng-if="date_creation.precision == 7" ng-bind="century(date_creation.label)+'e'"></span>
+                <span ng-if="date_creation.precision == 8" ng-bind="decade(date_creation.label)"></span>
                 <span ng-if="date_creation.precision == 9">{{ date_creation.date | date:'yyyy' }}</span>
                 <span ng-if="date_creation.precision == 10">{{ date_creation.date | date:'MM-yyyy' }}</span>
                 <span ng-if="date_creation.precision == 11">{{ date_creation.date | date:'dd-MM-yyyy' }}</span>
@@ -26,4 +35,10 @@
         <dt>{{ page.translation.home.id17 }}</dt>
         <dd><span ng-repeat="genre in item.genre"><br ng-if="$first == false" /><a href="http://wikidata.org/wiki/{{ genre.qwd }}" target="_blank">{{ genre.label }}</a></span></dd>
     </dl>
+    <div class="list-group-item list-group-item-warning text-center" ng-if="item.creator.length == 0 && item.date_creation.length == 0 && item.collection.length == 0 && item.genre.length == 0">
+        <div class="pull-right">
+            <a href="https://www.wikidata.org/wiki/Q{{ item.qwd }}" target="_blank" title="{{ page.translation.home.id18 }}"><img src="./web/images/wikidata-icon.png" style="max-height: 30px; max-width: 30px;" /></a>
+        </div>
+        <p>{{ page.translation.home.id19 }}</p>
+    </div>
 </div>

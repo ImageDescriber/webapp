@@ -1,0 +1,2 @@
+api: "http://localhost:8888/ImageDescription/api/web/app_dev.php" # https://imagedescription.histoiredelart.fr/api/web
+cookie_version: "v2"
